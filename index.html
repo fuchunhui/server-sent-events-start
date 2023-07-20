@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <meta charset="UTF-8">
+   <title>Server-sent events demo</title>
+</head>
+<body>
+  <button>Close the connection</button>
+  <ul></ul>
+
+<script>
+  const button = document.querySelector('button');
+  const eventSource = new EventSource('api');
+  // console.log(`withCredentials: ${eventSource.withCredentials}`);
+  // console.log(`url: ${eventSource.url}`);
+  // console.log(`OPEN readyState: ${eventSource.readyState}`);
+
+  const eventList = document.querySelector('ul');
+
+  eventSource.onopen = () => {
+    console.log("Connection to server opened.");
+  };
+
+  eventSource.onmessage = e => {
+    console.log(e.data);
+    const newElement = document.createElement('li');
+    newElement.textContent = 'message: ' + e.data;
+    eventList.appendChild(newElement);
+    // console.log(`MESSAGE readyState: ${eventSource.readyState}`);
+  };
+
+  eventSource.onerror = () => {
+    console.log(eventSource.readyState);
+    console.log('EventSource failed.');
+  };
+
+  button.onclick = () => {
+    console.log('Connection closed');
+    eventSource.close();
+    // console.log(`CLOSE readyState: ${eventSource.readyState}`);
+  };
+
+  eventSource.addEventListener('update', value => {
+    console.log('update', value);
+  });
+</script>
+</body>
+</html>
