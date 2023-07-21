@@ -1,6 +1,7 @@
 import express from 'express';
 import path from 'path';
 import { EventEmitter } from 'node:events';
+import { v4 as uuidv4} from 'uuid';
 
 class CustomEmitter extends EventEmitter {}
 const emitter = new CustomEmitter();
@@ -26,31 +27,17 @@ app.get('/api', (req, res) => {
   res.header('Access-Control-Allow-Origin', '*');
 
   const handler = v => {
-    console.log('an event occurred!', v);
-    // res.write(`data: ${new Date()} \n\n`);
-    
-    let data = 'event: ' + 'update' + '\n';
-    data += 'id: ' + 'test123' + '\n';
-    data += 'data: ' + new Date().getTime().toString() + '\n';
-    data += '\n';
-
-    res.write(data);
-  };
-
-  const test = v => {
-    const cell = {
-      event: 'server-time',
-      data: new Date().toTimeString()
+    const msg = {
+      event: 'update',
+      id: 'event_' + new Date().getTime(),
+      data: uuidv4().toLocaleUpperCase()
     };
-    res.write(`data: ${JSON.stringify(cell)} \n\n`);
+    const content = Object.keys(msg).map(item => `${item}: ${msg[item]}\n`).join('') + '\n';
+
+    res.write(content);
   };
 
   emitter.on('usermessage', handler);
-  // emitter.on('usermessage', test);
-
-  // res.on('update', () => {
-  //   console
-  // });
 
   res.on('close', () => {
     console.log('close connection.');
@@ -62,5 +49,3 @@ app.get('/api', (req, res) => {
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
 });
-
-

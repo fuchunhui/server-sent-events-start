@@ -22,7 +22,7 @@
   };
 
   eventSource.onmessage = e => {
-    console.log(e.data);
+    console.log(e);
     const newElement = document.createElement('li');
     newElement.textContent = 'message: ' + e.data;
     eventList.appendChild(newElement);
