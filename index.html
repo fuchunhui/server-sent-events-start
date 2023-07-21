@@ -3,10 +3,32 @@
 <head>
    <meta charset="UTF-8">
    <title>Server-sent events demo</title>
+   <style>
+    .wrap {
+      width: 100%;
+      display: flex;
+    }
+    .signal, .msg {
+      width: 48%;
+    }
+    .signal {
+      margin-right: 10px;
+    }
+    .signal li {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: inline-block;
+      margin-right: 3px;
+    }
+   </style>
 </head>
 <body>
   <button>Close the connection</button>
-  <ul></ul>
+  <div class="wrap">
+    <ul class="signal"></ul>
+    <ul class="msg"></ul>
+  </div>
 
 <script>
   const button = document.querySelector('button');
@@ -15,7 +37,8 @@
   // console.log(`url: ${eventSource.url}`);
   // console.log(`OPEN readyState: ${eventSource.readyState}`);
 
-  const eventList = document.querySelector('ul');
+  const msgEventList = document.querySelector('.msg');
+  const singalEventList = document.querySelector('.signal');
 
   eventSource.onopen = () => {
     console.log("Connection to server opened.");
@@ -25,7 +48,7 @@
     console.log(e);
     const newElement = document.createElement('li');
     newElement.textContent = 'message: ' + e.data;
-    eventList.appendChild(newElement);
+    msgEventList.appendChild(newElement);
     // console.log(`MESSAGE readyState: ${eventSource.readyState}`);
   };
 
@@ -40,9 +63,15 @@
     // console.log(`CLOSE readyState: ${eventSource.readyState}`);
   };
 
-  eventSource.addEventListener('update', value => {
-    console.log('update', value);
-  });
+  const createLamp = color => {
+    const ele = document.createElement('li');
+    ele.style.background = color;
+    singalEventList.appendChild(ele);
+  };
+
+  eventSource.addEventListener('stop', () => createLamp('red'));
+  eventSource.addEventListener('go', () => createLamp('green'));
+  eventSource.addEventListener('warning', () => createLamp('yellow'));
 </script>
 </body>
 </html>

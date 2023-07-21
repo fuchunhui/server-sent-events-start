@@ -17,7 +17,7 @@ app.get('/', (req, res) => {
   pusher = setInterval(() => {
     const data = new Date();
     emitter.emit('usermessage', data);
-  }, 2000);
+  }, 1000);
 });
 
 app.get('/api', (req, res) => {
@@ -26,13 +26,21 @@ app.get('/api', (req, res) => {
   res.header('Connection', 'keep-alive');
   res.header('Access-Control-Allow-Origin', '*');
 
-  const handler = v => {
+  const getSignal = () => {
+    const EventList = ['stop', 'go', 'warning'];
     const msg = {
-      event: 'update',
+      event: EventList[Math.floor(Math.random() * EventList.length)],
       id: 'event_' + new Date().getTime(),
       data: uuidv4().toLocaleUpperCase()
     };
     const content = Object.keys(msg).map(item => `${item}: ${msg[item]}\n`).join('') + '\n';
+    return content;
+  };
+  const handler = v => {
+    let content = `data: ${new Date().toISOString()}\n\n`;
+    if (Math.random() > 0.4) {
+      content = getSignal();
+    }
 
     res.write(content);
   };
